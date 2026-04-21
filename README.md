@@ -60,9 +60,16 @@ Sets a single pixel to a color.
 | `y` | integer 0–7 | `0` | Row |
 | `color` | string or integer | `ff0000` | 6-digit hex (`ff0000`), `#ff0000`, `0xff0000`, or 24-bit integer |
 
-**Example message text:**
+**Accepted formats:**
+
+JSON:
 ```json
 { "x": 3, "y": 5, "color": "00ff00" }
+```
+
+Comma-separated (positional: `x, y, color`):
+```
+3,5,00ff00
 ```
 
 **Response:** `OK` or `ERR`
@@ -77,9 +84,16 @@ Fills the entire matrix with a single color.
 |-------------------|------|---------|-------------|
 | `color` | string or integer | `000000` | 6-digit hex, `#rrggbb`, `0xrrggbb`, or 24-bit integer |
 
-**Example message text:**
+**Accepted formats:**
+
+JSON:
 ```json
 { "color": "0000ff" }
+```
+
+Comma-separated (positional: `color`):
+```
+0000ff
 ```
 
 **Response:** `OK` or `ERR`
@@ -96,9 +110,16 @@ values reduce network traffic.
 |-------------------|------|---------|-------|-------------|
 | `delay` | integer | `100` | 10–5000 | Frame send interval in milliseconds |
 
-**Example message text:**
+**Accepted formats:**
+
+JSON:
 ```json
 { "delay": 50 }
+```
+
+Comma-separated (positional: `delay`):
+```
+50
 ```
 
 **Response:** `OK` or `ERR`
@@ -174,9 +195,9 @@ is never part of the swarm message.
 
 ### Recommended slash commands
 
-- `/e131_set_pixel {"x":1,"y":2,"color":"ff0000"}`
-- `/e131_fill {"color":"0000ff"}`
-- `/e131_set_delay {"delay":50}`
+- `/e131_set_pixel 1,2,ff0000` or `/e131_set_pixel {"x":1,"y":2,"color":"ff0000"}`
+- `/e131_fill 0000ff` or `/e131_fill {"color":"0000ff"}`
+- `/e131_set_delay 50` or `/e131_set_delay {"delay":50}`
 - `/e131_draw_frame {"frame":[[16711680,0,0,0,0,0,0,0],[0,16711680,0,0,0,0,0,0],[0,0,16711680,0,0,0,0,0],[0,0,0,16711680,0,0,0,0],[0,0,0,0,16711680,0,0,0],[0,0,0,0,0,16711680,0,0],[0,0,0,0,0,0,16711680,0],[0,0,0,0,0,0,0,16711680]]}`
 - `/e131_get_frame {}`
 
@@ -210,15 +231,15 @@ When you want to change the display, output exactly one tool command as the enti
 Do not add explanations, markdown, prose, code fences, or any text before or after the command.
 
 Available commands:
-/e131_set_pixel {"x":<0-7>,"y":<0-7>,"color":"rrggbb"}
-/e131_fill {"color":"rrggbb"}
-/e131_set_delay {"delay":<10-5000>}
+/e131_set_pixel <x>,<y>,<rrggbb>
+/e131_fill <rrggbb>
+/e131_set_delay <ms>
 /e131_draw_frame {"frame":[[<24-bit-int>,...8 cols],...8 rows]}
 /e131_get_frame {}
 
 Rules:
-- Use valid JSON after the slash command.
-- For set_pixel and fill, color must be a 6-digit lowercase hex RGB string with no # prefix.
+- For set_pixel, fill, and set_delay, use the short comma-separated format above. JSON is also accepted (e.g. {"x":3,"y":4,"color":"ff0000"}).
+- color must be a 6-digit lowercase hex RGB string with no # prefix (e.g. ff0000).
 - For draw_frame, frame must be an 8x8 array of 24-bit RGB integers where red=16711680, green=65280, blue=255, black=0.
 - x and y must be integers from 0 to 7.
 - Use /e131_fill for solid full-screen colors.
@@ -230,8 +251,8 @@ Rules:
 - If the request is impossible or ambiguous, prefer a simple safe display command such as a black fill or a basic colored pattern rather than asking a question.
 
 Examples:
-/e131_fill {"color":"0000ff"}
-/e131_set_pixel {"x":3,"y":4,"color":"ff0000"}
+/e131_fill 0000ff
+/e131_set_pixel 3,4,ff0000
 /e131_draw_frame {"frame":[[16711680,0,0,0,0,0,0,0],[0,16711680,0,0,0,0,0,0],[0,0,16711680,0,0,0,0,0],[0,0,0,16711680,0,0,0,0],[0,0,0,0,16711680,0,0,0],[0,0,0,0,0,16711680,0,0],[0,0,0,0,0,0,16711680,0],[0,0,0,0,0,0,0,16711680]]}
 ```
 

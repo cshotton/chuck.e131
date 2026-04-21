@@ -48,6 +48,16 @@ function _parseTextHints(txt) {
     return out;
 }
 
+function _parsePositional(txt, keys) {
+    if (typeof txt !== "string") return {};
+    const t = txt.trim();
+    if (t.startsWith("{") || t.startsWith("[")) return {};
+    const parts = t.split(",").map(s => s.trim()).filter(Boolean);
+    const out = {};
+    keys.forEach((k, i) => { if (parts[i] !== undefined) out[k] = parts[i]; });
+    return out;
+}
+
 function _matchesCommand(txt) {
     if (typeof txt !== "string") return true;
     const trimmed = txt.trim();
@@ -103,10 +113,11 @@ async function preflight(authData, wfProxy) {
 
     const targs = _parseJsonSafe(wha.targs, {});
     const textObj = _parseJsonSafe(messageText, {});
+    const positional = _parsePositional(messageText, ["delay"]);
     const hints = _parseTextHints(messageText);
 
     const host = _normalizeHost(wha.host, targs.host, textObj.host, hints.host);
-    const delay = _clamp(_toInt(wha.delay ?? targs.delay ?? textObj.delay ?? hints.delay, 100), 10, 5000);
+    const delay = _clamp(_toInt(wha.delay ?? targs.delay ?? textObj.delay ?? positional.delay ?? hints.delay, 100), 10, 5000);
 
     const url = `${host}/led/setdelay/${delay}`;
 

@@ -50,6 +50,16 @@ function _parseTextHints(txt) {
     return out;
 }
 
+function _parsePositional(txt, keys) {
+    if (typeof txt !== "string") return {};
+    const t = txt.trim();
+    if (t.startsWith("{") || t.startsWith("[")) return {};
+    const parts = t.split(",").map(s => s.trim()).filter(Boolean);
+    const out = {};
+    keys.forEach((k, i) => { if (parts[i] !== undefined) out[k] = parts[i]; });
+    return out;
+}
+
 function _matchesCommand(txt) {
     if (typeof txt !== "string") return true;
     const trimmed = txt.trim();
@@ -105,10 +115,11 @@ async function preflight(authData, wfProxy) {
 
     const targs = _parseJsonSafe(wha.targs, {});
     const textObj = _parseJsonSafe(messageText, {});
+    const positional = _parsePositional(messageText, ["color"]);
     const hints = _parseTextHints(messageText);
 
     const host = _normalizeHost(wha.host, targs.host, textObj.host, hints.host);
-    const color = _normalizeColor(wha.color ?? targs.color ?? textObj.color ?? hints.color, "000000");
+    const color = _normalizeColor(wha.color ?? targs.color ?? textObj.color ?? positional.color ?? hints.color, "000000");
 
     const url = `${host}/led/fill/${color}`;
 

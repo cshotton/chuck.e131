@@ -59,6 +59,16 @@ function _parseTextHints(txt) {
     return out;
 }
 
+function _parsePositional(txt, keys) {
+    if (typeof txt !== "string") return {};
+    const t = txt.trim();
+    if (t.startsWith("{") || t.startsWith("[")) return {};
+    const parts = t.split(",").map(s => s.trim()).filter(Boolean);
+    const out = {};
+    keys.forEach((k, i) => { if (parts[i] !== undefined) out[k] = parts[i]; });
+    return out;
+}
+
 function _matchesCommand(txt) {
     if (typeof txt !== "string") return true;
     const trimmed = txt.trim();
@@ -114,12 +124,13 @@ async function preflight(authData, wfProxy) {
 
     const targs = _parseJsonSafe(wha.targs, {});
     const textObj = _parseJsonSafe(messageText, {});
+    const positional = _parsePositional(messageText, ["x", "y", "color"]);
     const hints = _parseTextHints(messageText);
 
     const host = _normalizeHost(wha.host, targs.host, textObj.host, hints.host);
-    const x = _clamp(_toInt(wha.x ?? targs.x ?? textObj.x ?? hints.x, 0), 0, 7);
-    const y = _clamp(_toInt(wha.y ?? targs.y ?? textObj.y ?? hints.y, 0), 0, 7);
-    const color = _normalizeColor(wha.color ?? targs.color ?? textObj.color ?? hints.color, "ff0000");
+    const x = _clamp(_toInt(wha.x ?? targs.x ?? textObj.x ?? positional.x ?? hints.x, 0), 0, 7);
+    const y = _clamp(_toInt(wha.y ?? targs.y ?? textObj.y ?? positional.y ?? hints.y, 0), 0, 7);
+    const color = _normalizeColor(wha.color ?? targs.color ?? textObj.color ?? positional.color ?? hints.color, "ff0000");
 
     const url = `${host}/led/set/${x}/${y}/${color}`;
 
