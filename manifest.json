@@ -1,0 +1,52 @@
+{
+  "manifestVersion": 2,
+  "id": "chuck.e131",
+  "displayName": "Chuck E131 Bridge",
+  "desc": "wf_agent tools and palette blocks for controlling e131test routes.",
+  "version": "0.1.0",
+  "author": "Chuck Shotton",
+  "authorInfoUrl": "http://kilroy.tech",
+  "appInfoUrl": "/apps/chuck.e131/info.html",
+  "appImageUrl": "/apps/chuck.e131/images/icon.svg",
+  "locked": false,
+  "override": false,
+  "hidden": false,
+  "pdClasses": {
+    "manager": {
+      "pdName": "manager",
+      "pdAlias": "chuck.e131.manager",
+      "desc": "E131 manager",
+      "runOnStart": true,
+      "visible": true,
+      "multipleAllowed": false,
+      "init": "init_hook",
+      "resume": "resume_hook",
+      "pause": "pause_hook",
+      "stop": "stop_hook"
+    },
+    "webhooks": {
+      "pdName": "webhooks",
+      "pdAlias": "chuck.e131.webhooks",
+      "desc": "E131 route wrapper webhooks",
+      "runOnStart": true,
+      "visible": false,
+      "multipleAllowed": false,
+      "init": "init_hook",
+      "resume": "resume_hook",
+      "pause": "pause_hook",
+      "stop": "stop_hook"
+    },
+    "wf_agent": {
+      "pdName": "wf_agent",
+      "pdAlias": "chuck.e131.wf_agent",
+      "desc": "Workflow agent runtime",
+      "runOnStart": false,
+      "visible": true,
+      "multipleAllowed": true,
+      "init": "init_hook",
+      "resume": "resume_hook",
+      "pause": "pause_hook",
+      "stop": "stop_hook"
+    }
+  }
+}

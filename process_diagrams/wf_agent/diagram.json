@@ -1,0 +1,16 @@
+{
+  "displayName": "Chuck E131 wf_agent",
+  "templateName": "chuck.e131/wf_agent",
+  "description": "Workflow agent",
+  "bgColor": "transparent",
+  "data": {
+    "class": "GraphLinksModel",
+    "nodeDataArray": [
+      {"category":"webhook","title":"init_hook","rsize":"120 40","trigger_name":"init_hook","action_workflow":"chuck.e131/wf_agent/init_hook","action_workflow_id":"","action_args":"{}","action_type":"WORKFLOW","action_trigger":"","server_only":"true","dash":[3,2],"visible":true,"zOrder":120,"key":-7,"loc":"200 -276"},
+      {"category":"webhook","title":"resume_hook","rsize":"120 40","trigger_name":"resume_hook","action_workflow":"chuck.e131/wf_agent/resume_hook","action_workflow_id":"","action_args":"{}","action_type":"WORKFLOW","action_trigger":"","server_only":"true","dash":[3,2],"visible":true,"zOrder":120,"key":-30,"loc":"180 -232"},
+      {"category":"webhook","title":"pause_hook","rsize":"120 40","trigger_name":"pause_hook","action_workflow":"chuck.e131/wf_agent/pause_hook","action_workflow_id":"","action_args":"{}","action_type":"WORKFLOW","action_trigger":"","server_only":"true","dash":[3,2],"visible":true,"zOrder":120,"key":-13,"loc":"184 -188"},
+      {"category":"webhook","title":"stop_hook","rsize":"120 40","trigger_name":"stop_hook","action_workflow":"chuck.e131/wf_agent/stop_hook","action_workflow_id":"","action_args":"{}","action_type":"WORKFLOW","action_trigger":"","server_only":"true","dash":[3,2],"visible":true,"zOrder":120,"key":-29,"loc":"184 -144"}
+    ],
+    "linkDataArray": []
+  }
+}

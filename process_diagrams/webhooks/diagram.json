@@ -1,0 +1,21 @@
+{
+  "displayName": "Chuck E131 Webhooks",
+  "templateName": "chuck.e131/webhooks",
+  "description": "Webhook tools for e131 routes",
+  "bgColor": "transparent",
+  "data": {
+    "class": "GraphLinksModel",
+    "nodeDataArray": [
+      {"category":"webhook","title":"init_hook","rsize":"120 40","trigger_name":"init_hook","action_workflow":"chuck.e131/webhooks/init_hook","action_workflow_id":"","action_args":"{}","action_type":"WORKFLOW","action_trigger":"","server_only":"true","dash":[3,2],"visible":true,"zOrder":140,"key":-10,"loc":"-420 220"},
+      {"category":"webhook","title":"pause_hook","rsize":"120 40","trigger_name":"pause_hook","action_workflow":"chuck.e131/webhooks/pause_hook","action_workflow_id":"","action_args":"{}","action_type":"WORKFLOW","action_trigger":"","server_only":"true","dash":[3,2],"visible":true,"zOrder":140,"key":-11,"loc":"-292 220"},
+      {"category":"webhook","title":"resume_hook","rsize":"120 40","trigger_name":"resume_hook","action_workflow":"chuck.e131/webhooks/resume_hook","action_workflow_id":"","action_args":"{}","action_type":"WORKFLOW","action_trigger":"","server_only":"true","dash":[3,2],"visible":true,"zOrder":140,"key":-12,"loc":"-164 220"},
+      {"category":"webhook","title":"stop_hook","rsize":"120 40","trigger_name":"stop_hook","action_workflow":"chuck.e131/webhooks/stop_hook","action_workflow_id":"","action_args":"{}","action_type":"WORKFLOW","action_trigger":"","server_only":"true","dash":[3,2],"visible":true,"zOrder":140,"key":-13,"loc":"-36 220"},
+      {"category":"webhook","title":"e131_set_pixel","rsize":"160 40","trigger_name":"e131_set_pixel","action_workflow":"chuck.e131/webhooks/e131_set_pixel","action_workflow_id":"","action_args":"{}","action_type":"WORKFLOW","action_trigger":"","server_only":"true","dash":[3,2],"visible":true,"zOrder":140,"key":-14,"loc":"140 220"},
+      {"category":"webhook","title":"e131_fill","rsize":"140 40","trigger_name":"e131_fill","action_workflow":"chuck.e131/webhooks/e131_fill","action_workflow_id":"","action_args":"{}","action_type":"WORKFLOW","action_trigger":"","server_only":"true","dash":[3,2],"visible":true,"zOrder":140,"key":-15,"loc":"314 220"},
+      {"category":"webhook","title":"e131_set_delay","rsize":"160 40","trigger_name":"e131_set_delay","action_workflow":"chuck.e131/webhooks/e131_set_delay","action_workflow_id":"","action_args":"{}","action_type":"WORKFLOW","action_trigger":"","server_only":"true","dash":[3,2],"visible":true,"zOrder":140,"key":-16,"loc":"486 220"},
+      {"category":"webhook","title":"e131_draw_frame","rsize":"170 40","trigger_name":"e131_draw_frame","action_workflow":"chuck.e131/webhooks/e131_draw_frame","action_workflow_id":"","action_args":"{}","action_type":"WORKFLOW","action_trigger":"","server_only":"true","dash":[3,2],"visible":true,"zOrder":140,"key":-17,"loc":"664 220"},
+      {"category":"webhook","title":"e131_get_frame","rsize":"160 40","trigger_name":"e131_get_frame","action_workflow":"chuck.e131/webhooks/e131_get_frame","action_workflow_id":"","action_args":"{}","action_type":"WORKFLOW","action_trigger":"","server_only":"true","dash":[3,2],"visible":true,"zOrder":140,"key":-18,"loc":"838 220"}
+    ],
+    "linkDataArray": []
+  }
+}

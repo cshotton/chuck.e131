@@ -1,0 +1,231 @@
+# chuck.e131
+
+Kilroy app that bridges Kilroy swarms to the **e131test** E1.31 LED matrix gateway server.
+It registers five wf_agent webhook tools. An AI agent (or any swarm participant) sends a
+chat message to the appropriate wf_agent and the webhook script translates it into an HTTP
+call to the gateway. The agent replies with `OK`, `ERR`, or plain-text data.
+
+## Architecture
+
+```
+Swarm message  →  wf_agent (chuck.e131.webhooks)  →  HTTP  →  e131test gateway  →  E1.31  →  LED matrix
+                                                    ←  OK / ERR / frame data
+```
+
+- **Gateway default:** `http://localhost:3131` (override per-message with `host`)
+- **Webhook diagram alias:** `chuck.e131.webhooks`
+
+---
+
+## Swarm message format
+
+Each wf_agent accepts a swarm chat message. The message text is resolved in this priority order:
+
+1. Top-level fields on `wf_webhook_args` (set in the palette block)
+2. Parsed JSON in `wf_webhook_args.targs`
+3. The message text itself parsed as a JSON object
+4. Key/value hints extracted from the message text (`key: value` or `key=value`)
+
+The simplest and most reliable approach is to send **JSON as the message text**:
+
+```json
+{ "host": "http://localhost:3131", "<param>": <value>, ... }
+```
+
+`host` is optional in every message — omit it to use the gateway default.
+
+---
+
+## Tools
+
+### `e131_set_pixel`
+
+Sets a single pixel to a color.
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `host` | string | `http://localhost:3131` | Gateway base URL |
+| `x` | integer 0–7 | `0` | Column |
+| `y` | integer 0–7 | `0` | Row |
+| `color` | string or integer | `ff0000` | 6-digit hex (`ff0000`), `#ff0000`, `0xff0000`, or 24-bit integer |
+
+**Example message text:**
+```json
+{ "x": 3, "y": 5, "color": "00ff00" }
+```
+
+**Response:** `OK` or `ERR`
+
+---
+
+### `e131_fill`
+
+Fills the entire matrix with a single color.
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `host` | string | `http://localhost:3131` | Gateway base URL |
+| `color` | string or integer | `000000` | 6-digit hex, `#rrggbb`, `0xrrggbb`, or 24-bit integer |
+
+**Example message text:**
+```json
+{ "color": "0000ff" }
+```
+
+**Response:** `OK` or `ERR`
+
+---
+
+### `e131_set_delay`
+
+Sets the interval between E1.31 packet transmissions. The gateway continuously re-sends the
+current frame to the LED device at this rate. Lower values give smoother animations; higher
+values reduce network traffic.
+
+| Parameter | Type | Default | Range | Description |
+|-----------|------|---------|-------|-------------|
+| `host` | string | `http://localhost:3131` | — | Gateway base URL |
+| `delay` | integer | `100` | 10–5000 | Frame send interval in milliseconds |
+
+**Example message text:**
+```json
+{ "delay": 50 }
+```
+
+**Response:** `OK` or `ERR`
+
+---
+
+### `e131_draw_frame`
+
+Writes a complete 8×8 frame at once. The frame is an 8×8 array of 24-bit RGB integers
+(row-major: `frame[x][y]`). Use `0` for black (off).
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `host` | string | `http://localhost:3131` | Gateway base URL |
+| `frame` | array | all zeros | 8-element array of 8-element arrays of 24-bit integers |
+
+**Color encoding:** each cell is a 24-bit integer: `(R << 16) | (G << 8) | B`.
+Common values: `16711680` = red (`0xff0000`), `65280` = green, `255` = blue, `0` = off.
+
+**Example message text:**
+```json
+{
+  "frame": [
+    [16711680, 0, 0, 0, 0, 0, 0, 0],
+    [0, 16711680, 0, 0, 0, 0, 0, 0],
+    [0, 0, 16711680, 0, 0, 0, 0, 0],
+    [0, 0, 0, 16711680, 0, 0, 0, 0],
+    [0, 0, 0, 0, 16711680, 0, 0, 0],
+    [0, 0, 0, 0, 0, 16711680, 0, 0],
+    [0, 0, 0, 0, 0, 0, 16711680, 0],
+    [0, 0, 0, 0, 0, 0, 0, 16711680]
+  ]
+}
+```
+
+**Response:** `OK` or `ERR`
+
+---
+
+### `e131_get_frame`
+
+Returns the current in-memory frame buffer from the gateway (what was last written — the
+gateway does not read back state from the hardware).
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `host` | string | `http://localhost:3131` | Gateway base URL |
+
+**Example message text:**
+```json
+{}
+```
+
+**Response:** JSON string of the 8×8 frame — `{"frame":[[r,g,b,...],...]}`  — or `ERR`.
+
+---
+
+## AI palette
+
+Open the manager AI button to load the palette page. Each block is pre-populated with
+default `wf_webhook_args` values and can be dragged into any pipeline or swarm diagram.
+Blocks connect to the `chuck.e131.webhooks` diagram on the running Kilroy server.
+
+---
+
+## Using With `ai_agent` In A Pipeline
+
+The intended pattern is:
+
+```text
+user/chat input → ai_agent → shared tool swarm → regex/router wf_agent blocks → chuck.e131 wf_agent blocks → LED matrix
+```
+
+Have the `ai_agent` emit a single slash command at the start of each tool call. Route those
+messages with regex match blocks or multiple `wf_agent` listeners on the same swarm.
+
+### Recommended slash commands
+
+- `/e131_set_pixel {"x":1,"y":2,"color":"ff0000"}`
+- `/e131_fill {"color":"0000ff"}`
+- `/e131_set_delay {"delay":50}`
+- `/e131_draw_frame {"frame":[[16711680,0,0,0,0,0,0,0],[0,16711680,0,0,0,0,0,0],[0,0,16711680,0,0,0,0,0],[0,0,0,16711680,0,0,0,0],[0,0,0,0,16711680,0,0,0],[0,0,0,0,0,16711680,0,0],[0,0,0,0,0,0,16711680,0],[0,0,0,0,0,0,0,16711680]]}`
+- `/e131_get_frame {}`
+
+Each chuck.e131 webhook now self-filters on its own slash command. If a message starts with a
+different slash command, that tool ignores it and publishes nothing. If no slash command is
+present, the tool still accepts the message for backward compatibility.
+
+### Regex routing
+
+If you use regex match blocks upstream, match on the leading command:
+
+- `^/e131_set_pixel\b`
+- `^/e131_fill\b`
+- `^/e131_set_delay\b`
+- `^/e131_draw_frame\b`
+- `^/e131_get_frame\b`
+
+This gives you two layers of protection:
+
+1. The regex block routes to the correct branch.
+2. The webhook script ignores any slash-command message not meant for it.
+
+### Recommended `ai_agent` system prompt
+
+Use this system prompt for the LLM that will control the matrix:
+
+```text
+You control an 8x8 RGB LED matrix through five slash-command tools.
+
+When you want to change the display, output exactly one tool command as the entire reply.
+Do not add explanations, markdown, prose, code fences, or any text before or after the command.
+
+Available commands:
+/e131_set_pixel {"x":<0-7>,"y":<0-7>,"color":"rrggbb"}
+/e131_fill {"color":"rrggbb"}
+/e131_set_delay {"delay":<10-5000>}
+/e131_draw_frame {"frame":[[<24-bit-int>,...8 cols],...8 rows]}
+/e131_get_frame {}
+
+Rules:
+- Use valid JSON after the slash command.
+- For set_pixel and fill, color must be a 6-digit lowercase hex RGB string with no # prefix.
+- For draw_frame, frame must be an 8x8 array of 24-bit RGB integers where red=16711680, green=65280, blue=255, black=0.
+- x and y must be integers from 0 to 7.
+- Use /e131_fill for solid full-screen colors.
+- Use /e131_set_pixel only for single-pixel edits.
+- Use /e131_draw_frame for patterns, icons, text-like shapes, and multi-pixel scenes.
+- Use /e131_get_frame only when you need to inspect current state.
+- If asked for an animation speed or refresh rate, use /e131_set_delay.
+- Never emit more than one slash command in a single response.
+- If the request is impossible or ambiguous, prefer a simple safe display command such as a black fill or a basic colored pattern rather than asking a question.
+
+Examples:
+/e131_fill {"color":"0000ff"}
+/e131_set_pixel {"x":3,"y":4,"color":"ff0000"}
+/e131_draw_frame {"frame":[[16711680,0,0,0,0,0,0,0],[0,16711680,0,0,0,0,0,0],[0,0,16711680,0,0,0,0,0],[0,0,0,16711680,0,0,0,0],[0,0,0,0,16711680,0,0,0],[0,0,0,0,0,16711680,0,0],[0,0,0,0,0,0,16711680,0],[0,0,0,0,0,0,0,16711680]]}
+```
+

@@ -1,0 +1,27 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <block type="workflow_start" id="blk_001" deletable="false" x="190" y="50">
+    <field name="name">chuck.e131/manager/ui_ai</field>
+    <field name="version">1</field>
+    <field name="description"/>
+    <field name="interactive">TRUE</field>
+    <field name="clean_up">TRUE</field>
+    <next>
+      <block type="step_group" id="blk_002">
+        <field name="role">*</field>
+        <field name="timer">24</field>
+        <field name="interactive">TRUE</field>
+        <field name="can_terminate">TRUE</field>
+        <field name="message"/>
+        <statement name="success">
+          <block type="show_url" id="blk_003">
+            <field name="url">/apps/chuck.e131/ai/index.html</field>
+            <field name="TARGET">IFRAME</field>
+          </block>
+        </statement>
+        <next>
+          <block type="workflow_end" id="blk_004"/>
+        </next>
+      </block>
+    </next>
+  </block>
+</xml>

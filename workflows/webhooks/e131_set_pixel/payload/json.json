@@ -1,0 +1,38 @@
+{
+  "name": "chuck.e131/webhooks/e131_set_pixel",
+  "version": "1",
+  "description": "Set one pixel in e131 matrix",
+  "isInteractive": false,
+  "clean_up": true,
+  "inputs": [],
+  "outputs": [],
+  "args": { "role": "*" },
+  "steps": [
+    { "operation": "set_value", "isServer": true, "args": { "variable": "wfCleanupFlag", "value": "1" } },
+    {
+      "operation": "step_group",
+      "isServer": true,
+      "args": {
+        "role": "*",
+        "message": "",
+        "timer": "24",
+        "isInteractive": false,
+        "canTerminate": false,
+        "success": [
+          {
+            "operation": "set_var_to",
+            "isServer": true,
+            "args": {
+              "var_name": "x",
+              "push_array_name": null,
+              "field_name": null,
+              "var_expr": { "type": "variable", "arg": "resp" }
+            }
+          }
+        ]
+      }
+    },
+    { "operation": "end", "isServer": true, "args": null }
+  ],
+  "externalForms": {}
+}
