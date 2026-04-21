@@ -12,27 +12,39 @@ Swarm message  →  wf_agent (chuck.e131.webhooks)  →  HTTP  →  e131test gat
                                                     ←  OK / ERR / frame data
 ```
 
-- **Gateway default:** `http://localhost:3131` (override per-message with `host`)
+- **Gateway URL:** configured in the wf_agent palette block via `wf_webhook_args.host` (default: `http://localhost:3131`)
 - **Webhook diagram alias:** `chuck.e131.webhooks`
 
 ---
 
-## Swarm message format
+## Configuration vs. swarm message format
 
-Each wf_agent accepts a swarm chat message. The message text is resolved in this priority order:
+### Gateway host (static config)
 
-1. Top-level fields on `wf_webhook_args` (set in the palette block)
-2. Parsed JSON in `wf_webhook_args.targs`
-3. The message text itself parsed as a JSON object
-4. Key/value hints extracted from the message text (`key: value` or `key=value`)
+The gateway URL is **not** passed in swarm messages. It is baked into the wf_agent palette
+block via the `wf_webhook_args` field:
+
+```json
+{ "host": "http://localhost:3131" }
+```
+
+This value is injected into every webhook invocation automatically by the wf_agent
+infrastructure. To point a block at a different gateway, edit `wf_webhook_args.host` in the
+palette block before deploying the pipeline.
+
+### Swarm message format (operation parameters)
+
+The swarm message text carries only the operation-specific parameters. The message text is
+parsed in this priority order:
+
+1. The message text itself parsed as a JSON object
+2. Key/value hints extracted from plain text (`key: value` or `key=value`)
 
 The simplest and most reliable approach is to send **JSON as the message text**:
 
 ```json
-{ "host": "http://localhost:3131", "<param>": <value>, ... }
+{ "<param>": <value>, ... }
 ```
-
-`host` is optional in every message — omit it to use the gateway default.
 
 ---
 
@@ -42,9 +54,8 @@ The simplest and most reliable approach is to send **JSON as the message text**:
 
 Sets a single pixel to a color.
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `host` | string | `http://localhost:3131` | Gateway base URL |
+| Message parameter | Type | Default | Description |
+|-------------------|------|---------|-------------|
 | `x` | integer 0–7 | `0` | Column |
 | `y` | integer 0–7 | `0` | Row |
 | `color` | string or integer | `ff0000` | 6-digit hex (`ff0000`), `#ff0000`, `0xff0000`, or 24-bit integer |
@@ -62,9 +73,8 @@ Sets a single pixel to a color.
 
 Fills the entire matrix with a single color.
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `host` | string | `http://localhost:3131` | Gateway base URL |
+| Message parameter | Type | Default | Description |
+|-------------------|------|---------|-------------|
 | `color` | string or integer | `000000` | 6-digit hex, `#rrggbb`, `0xrrggbb`, or 24-bit integer |
 
 **Example message text:**
@@ -82,9 +92,8 @@ Sets the interval between E1.31 packet transmissions. The gateway continuously r
 current frame to the LED device at this rate. Lower values give smoother animations; higher
 values reduce network traffic.
 
-| Parameter | Type | Default | Range | Description |
-|-----------|------|---------|-------|-------------|
-| `host` | string | `http://localhost:3131` | — | Gateway base URL |
+| Message parameter | Type | Default | Range | Description |
+|-------------------|------|---------|-------|-------------|
 | `delay` | integer | `100` | 10–5000 | Frame send interval in milliseconds |
 
 **Example message text:**
@@ -101,9 +110,8 @@ values reduce network traffic.
 Writes a complete 8×8 frame at once. The frame is an 8×8 array of 24-bit RGB integers
 (row-major: `frame[x][y]`). Use `0` for black (off).
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `host` | string | `http://localhost:3131` | Gateway base URL |
+| Message parameter | Type | Default | Description |
+|-------------------|------|---------|-------------|
 | `frame` | array | all zeros | 8-element array of 8-element arrays of 24-bit integers |
 
 **Color encoding:** each cell is a 24-bit integer: `(R << 16) | (G << 8) | B`.
@@ -134,14 +142,7 @@ Common values: `16711680` = red (`0xff0000`), `65280` = green, `255` = blue, `0`
 Returns the current in-memory frame buffer from the gateway (what was last written — the
 gateway does not read back state from the hardware).
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `host` | string | `http://localhost:3131` | Gateway base URL |
-
-**Example message text:**
-```json
-{}
-```
+No message parameters required — send `{}` or an empty message.
 
 **Response:** JSON string of the 8×8 frame — `{"frame":[[r,g,b,...],...]}`  — or `ERR`.
 
@@ -150,7 +151,10 @@ gateway does not read back state from the hardware).
 ## AI palette
 
 Open the manager AI button to load the palette page. Each block is pre-populated with
-default `wf_webhook_args` values and can be dragged into any pipeline or swarm diagram.
+default `wf_webhook_args` values (including `host`) and can be dragged into any pipeline or
+swarm diagram. To target a different gateway, edit `wf_webhook_args.host` in the block
+properties before saving the pipeline.
+
 Blocks connect to the `chuck.e131.webhooks` diagram on the running Kilroy server.
 
 ---
@@ -160,11 +164,13 @@ Blocks connect to the `chuck.e131.webhooks` diagram on the running Kilroy server
 The intended pattern is:
 
 ```text
-user/chat input → ai_agent → shared tool swarm → regex/router wf_agent blocks → chuck.e131 wf_agent blocks → LED matrix
+user/chat input → ai_agent → shared tool swarm → chuck.e131 wf_agent blocks → LED matrix
 ```
 
-Have the `ai_agent` emit a single slash command at the start of each tool call. Route those
-messages with regex match blocks or multiple `wf_agent` listeners on the same swarm.
+The `ai_agent` emits a single slash command per response. All chuck.e131 wf_agent blocks
+listen on the same swarm and self-filter: each only acts on its own slash command and ignores
+all others. The gateway URL is configured once in each block's `wf_webhook_args.host` — it
+is never part of the swarm message.
 
 ### Recommended slash commands
 
