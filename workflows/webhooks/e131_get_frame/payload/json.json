@@ -5,7 +5,9 @@
   "isInteractive": false,
   "clean_up": true,
   "inputs": [],
-  "outputs": [],
+  "outputs": [
+    "tpublish"
+  ],
   "args": { "role": "*" },
   "steps": [
     { "operation": "set_value", "isServer": true, "args": { "variable": "wfCleanupFlag", "value": "1" } },

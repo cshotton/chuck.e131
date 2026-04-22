@@ -5,25 +5,35 @@
     <field name="description">Fill e131 matrix</field>
     <field name="interactive">FALSE</field>
     <field name="clean_up">TRUE</field>
+    <value name="OUTPUTS">
+      <block type="process_variable_all" id="blk_002">
+        <mutation variable_count="1"/>
+        <value name="INPUT0">
+          <block type="process_variable" id="blk_003">
+            <field name="process_variable_val">tpublish</field>
+          </block>
+        </value>
+      </block>
+    </value>
     <next>
-      <block type="step_group" id="blk_002">
+      <block type="step_group" id="blk_004">
         <field name="role">*</field>
         <field name="timer">24</field>
         <field name="interactive">FALSE</field>
         <field name="can_terminate">FALSE</field>
         <field name="message"/>
         <statement name="success">
-          <block type="set_var_to" id="blk_003">
+          <block type="set_var_to" id="blk_005">
             <field name="var_name">x</field>
             <value name="var_expr">
-              <block type="var_variable" id="blk_004">
+              <block type="var_variable" id="blk_006">
                 <field name="var_name">resp</field>
               </block>
             </value>
           </block>
         </statement>
         <next>
-          <block type="workflow_end" id="blk_005"/>
+          <block type="workflow_end" id="blk_007"/>
         </next>
       </block>
     </next>

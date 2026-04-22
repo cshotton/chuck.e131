@@ -46,6 +46,18 @@ The simplest and most reliable approach is to send **JSON as the message text**:
 { "<param>": <value>, ... }
 ```
 
+Important: JSON must use straight ASCII quotes (`"`), not typographic smart quotes (`“”`).
+
+Valid:
+```text
+{"x":6,"y":6,"color":"008080"}
+```
+
+Invalid:
+```text
+{“x”:6,“y”:6,“color”:“008080”}
+```
+
 ---
 
 ## Tools
@@ -194,6 +206,12 @@ all others. The gateway URL is configured once in each block's `wf_webhook_args.
 is never part of the swarm message.
 
 ### Recommended slash commands
+
+Safe copy (preferred for quick manual testing):
+
+- `/e131_set_pixel 6,6,008080`
+- `/e131_fill 0000ff`
+- `/e131_set_delay 50`
 
 - `/e131_set_pixel 1,2,ff0000` or `/e131_set_pixel {"x":1,"y":2,"color":"ff0000"}`
 - `/e131_fill 0000ff` or `/e131_fill {"color":"0000ff"}`
