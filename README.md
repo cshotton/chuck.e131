@@ -5,6 +5,12 @@ It registers five wf_agent webhook tools. An AI agent (or any swarm participant)
 chat message to the appropriate wf_agent and the webhook script translates it into an HTTP
 call to the gateway. The agent replies with `OK`, `ERR`, or plain-text data.
 
+## Dependency
+
+This app depends on the external **e131gateway** project in cshotton's GitHub projects
+([cshotton/e131gateway](https://github.com/cshotton/e131gateway)). The `chuck.e131` workflows call that gateway over HTTP
+(default `http://localhost:3131`) to send E1.31 data to the matrix hardware.
+
 ## Architecture
 
 ```
@@ -275,3 +281,18 @@ Examples:
 /e131_draw_frame {"frame":[["ff0000",0,0,0,0,0,0,0],[0,"ff0000",0,0,0,0,0,0],[0,0,"ff0000",0,0,0,0,0],[0,0,0,"ff0000",0,0,0,0],[0,0,0,0,"ff0000",0,0,0],[0,0,0,0,0,"ff0000",0,0],[0,0,0,0,0,0,"ff0000",0],[0,0,0,0,0,0,0,"ff0000"]]}
 ```
 
+```
+/e131_draw_frame {"frame":[["4aa3ff","4aa3ff","4aa3ff","4aa3ff","4aa3ff","22aa22","22aa22","22aa22"],["4aa3ff","4aa3ff","4aa3ff","4aa3ff","4aa3ff","22aa22","22aa22","22aa22"],["4aa3ff","ffffff","4aa3ff","4aa3ff","4aa3ff","22aa22","22aa22","22aa22"],["4aa3ff","ffffff","4aa3ff","4aa3ff","4aa3ff","22aa22","22aa22","22aa22"],["4aa3ff","ffd93d","4aa3ff","4aa3ff","4aa3ff","22aa22","22aa22","22aa22"],["4aa3ff","ffd93d","4aa3ff","4aa3ff","4aa3ff","22aa22","22aa22","22aa22"],["ffd93d","ffd93d","ffd93d","4aa3ff","4aa3ff","22aa22","22aa22","22aa22"],["ffd93d","ffd93d","ffd93d","4aa3ff","4aa3ff","22aa22","22aa22","22aa22"]]}
+```
+
+```
+/e131_draw_frame {"frame":[["ff8a3d","ff8a3d","ff6a3d","ff6a3d","ff4f6d","5a3db8","2b7a2b","2b7a2b"],["ff8a3d","ff8a3d","ff6a3d","ff6a3d","ff4f6d","5a3db8","2b7a2b","2b7a2b"],["ff8a3d","ff8a3d","ff6a3d","ff6a3d","ff4f6d","5a3db8","2b7a2b","2b7a2b"],["ff8a3d","ff8a3d","ff6a3d","ff6a3d","ff4f6d","5a3db8","2b7a2b","2b7a2b"],["ff8a3d","ff8a3d","ff6a3d","ff6a3d","ff4f6d","5a3db8","2b7a2b","2b7a2b"],["ff8a3d","ff8a3d","ff6a3d","ff6a3d","ff4f6d","5a3db8","2b7a2b","2b7a2b"],["ff8a3d","ff8a3d","ff6a3d","ff6a3d","ff4f6d","5a3db8","2b7a2b","2b7a2b"],["ff8a3d","ff8a3d","ff6a3d","ff6a3d","ff4f6d","5a3db8","2b7a2b","2b7a2b"]]}
+```
+
+```
+/e131_draw_frame {"frame":[["ffcc00","ffcc00","ffcc00","ffcc00","ffcc00","ffcc00","ffcc00","ffcc00"],["ffcc00","ffcc00","ffcc00","ffcc00","ffcc00","000000","ffcc00","ffcc00"],["ffcc00","ffcc00","000000","ffcc00","ffcc00","ffcc00","000000","ffcc00"],["ffcc00","ffcc00","ffcc00","ffcc00","ffcc00","ffcc00","000000","ffcc00"],["ffcc00","ffcc00","ffcc00","ffcc00","ffcc00","ffcc00","000000","ffcc00"],["ffcc00","ffcc00","000000","ffcc00","ffcc00","ffcc00","000000","ffcc00"],["ffcc00","ffcc00","ffcc00","ffcc00","ffcc00","000000","ffcc00","ffcc00"],["ffcc00","ffcc00","ffcc00","ffcc00","ffcc00","ffcc00","ffcc00","ffcc00"]]}
+```
+
+```
+/e131_draw_frame {"frame":[["ffcc00","ffcc00","ffcc00","ffcc00","ffcc00","ffcc00","ffcc00","ffcc00"],["ffcc00","ffcc00","ffcc00","ffcc00","ffcc00","ffcc00","000000","ffcc00"],["ffcc00","ffcc00","000000","ffcc00","ffcc00","000000","ffcc00","ffcc00"],["ffcc00","ffcc00","ffcc00","ffcc00","ffcc00","000000","ffcc00","ffcc00"],["ffcc00","ffcc00","ffcc00","ffcc00","ffcc00","000000","ffcc00","ffcc00"],["ffcc00","ffcc00","000000","ffcc00","ffcc00","000000","ffcc00","ffcc00"],["ffcc00","ffcc00","ffcc00","ffcc00","ffcc00","ffcc00","000000","ffcc00"],["ffcc00","ffcc00","ffcc00","ffcc00","ffcc00","ffcc00","ffcc00","ffcc00"]]}
+```
