@@ -35,6 +35,22 @@ function _defaultFrame() {
     return frame;
 }
 
+function _normalizeFrameCell(val) {
+    if (typeof val === "number" && Number.isFinite(val)) {
+        return Math.trunc(val) & 0xffffff;
+    }
+    if (typeof val === "string") {
+        const t = val.trim();
+        const hex = t.replace(/^#/, "").replace(/^0x/i, "");
+        if (/^[0-9a-fA-F]{6}$/.test(hex)) {
+            return parseInt(hex, 16) & 0xffffff;
+        }
+        const n = Number(t);
+        if (Number.isFinite(n)) return Math.trunc(n) & 0xffffff;
+    }
+    return 0;
+}
+
 function _normalizeFrame(frame) {
     const fallback = _defaultFrame();
     if (!Array.isArray(frame)) return fallback;
@@ -45,8 +61,7 @@ function _normalizeFrame(frame) {
     const out = _defaultFrame();
     for (let x = 0; x < 8; x++) {
         for (let y = 0; y < 8; y++) {
-            const n = Number(frame[x][y]);
-            out[x][y] = Number.isFinite(n) ? (Math.trunc(n) & 0xffffff) : 0;
+            out[x][y] = _normalizeFrameCell(frame[x][y]);
         }
     }
     return out;

@@ -140,28 +140,29 @@ Comma-separated (positional: `delay`):
 
 ### `e131_draw_frame`
 
-Writes a complete 8×8 frame at once. The frame is an 8×8 array of 24-bit RGB integers
-(row-major: `frame[x][y]`). Use `0` for black (off).
+Writes a complete 8×8 frame at once. The frame is an 8×8 array of 24-bit RGB values
+(row-major: `frame[x][y]`). Each cell can be a hex string (`"rrggbb"`, `"#rrggbb"`,
+`"0xrrggbb"`) or an integer (`0` to `16777215`). Use `0` or `"000000"` for black (off).
 
 | Message parameter | Type | Default | Description |
 |-------------------|------|---------|-------------|
-| `frame` | array | all zeros | 8-element array of 8-element arrays of 24-bit integers |
+| `frame` | array | all zeros | 8-element array of 8-element arrays of hex strings or 24-bit integers |
 
-**Color encoding:** each cell is a 24-bit integer: `(R << 16) | (G << 8) | B`.
+**Color encoding:** each cell may be hex (`"ff0000"`, `"#ff0000"`, `"0xff0000"`) or integer (`16711680`).
 Common values: `16711680` = red (`0xff0000`), `65280` = green, `255` = blue, `0` = off.
 
 **Example message text:**
 ```json
 {
   "frame": [
-    [16711680, 0, 0, 0, 0, 0, 0, 0],
-    [0, 16711680, 0, 0, 0, 0, 0, 0],
-    [0, 0, 16711680, 0, 0, 0, 0, 0],
-    [0, 0, 0, 16711680, 0, 0, 0, 0],
-    [0, 0, 0, 0, 16711680, 0, 0, 0],
-    [0, 0, 0, 0, 0, 16711680, 0, 0],
-    [0, 0, 0, 0, 0, 0, 16711680, 0],
-    [0, 0, 0, 0, 0, 0, 0, 16711680]
+    ["ff0000", 0, 0, 0, 0, 0, 0, 0],
+    [0, "ff0000", 0, 0, 0, 0, 0, 0],
+    [0, 0, "ff0000", 0, 0, 0, 0, 0],
+    [0, 0, 0, "ff0000", 0, 0, 0, 0],
+    [0, 0, 0, 0, "ff0000", 0, 0, 0],
+    [0, 0, 0, 0, 0, "ff0000", 0, 0],
+    [0, 0, 0, 0, 0, 0, "ff0000", 0],
+    [0, 0, 0, 0, 0, 0, 0, "ff0000"]
   ]
 }
 ```
@@ -216,7 +217,7 @@ Safe copy (preferred for quick manual testing):
 - `/e131_set_pixel 1,2,ff0000` or `/e131_set_pixel {"x":1,"y":2,"color":"ff0000"}`
 - `/e131_fill 0000ff` or `/e131_fill {"color":"0000ff"}`
 - `/e131_set_delay 50` or `/e131_set_delay {"delay":50}`
-- `/e131_draw_frame {"frame":[[16711680,0,0,0,0,0,0,0],[0,16711680,0,0,0,0,0,0],[0,0,16711680,0,0,0,0,0],[0,0,0,16711680,0,0,0,0],[0,0,0,0,16711680,0,0,0],[0,0,0,0,0,16711680,0,0],[0,0,0,0,0,0,16711680,0],[0,0,0,0,0,0,0,16711680]]}`
+- `/e131_draw_frame {"frame":[["ff0000",0,0,0,0,0,0,0],[0,"ff0000",0,0,0,0,0,0],[0,0,"ff0000",0,0,0,0,0],[0,0,0,"ff0000",0,0,0,0],[0,0,0,0,"ff0000",0,0,0],[0,0,0,0,0,"ff0000",0,0],[0,0,0,0,0,0,"ff0000",0],[0,0,0,0,0,0,0,"ff0000"]]}`
 - `/e131_get_frame {}`
 
 Each chuck.e131 webhook now self-filters on its own slash command. If a message starts with a
@@ -252,13 +253,13 @@ Available commands:
 /e131_set_pixel <x>,<y>,<rrggbb>
 /e131_fill <rrggbb>
 /e131_set_delay <ms>
-/e131_draw_frame {"frame":[[<24-bit-int>,...8 cols],...8 rows]}
+/e131_draw_frame {"frame":[[<rrggbb-or-24-bit-int>,...8 cols],...8 rows]}
 /e131_get_frame {}
 
 Rules:
 - For set_pixel, fill, and set_delay, use the short comma-separated format above. JSON is also accepted (e.g. {"x":3,"y":4,"color":"ff0000"}).
 - color must be a 6-digit lowercase hex RGB string with no # prefix (e.g. ff0000).
-- For draw_frame, frame must be an 8x8 array of 24-bit RGB integers where red=16711680, green=65280, blue=255, black=0.
+- For draw_frame, frame must be an 8x8 array where each cell is either a hex RGB string (rrggbb, #rrggbb, or 0xrrggbb) or a 24-bit integer. Example values: red=ff0000 (or 16711680), green=00ff00 (or 65280), blue=0000ff (or 255), black=000000 (or 0).
 - x and y must be integers from 0 to 7.
 - Use /e131_fill for solid full-screen colors.
 - Use /e131_set_pixel only for single-pixel edits.
@@ -271,6 +272,6 @@ Rules:
 Examples:
 /e131_fill 0000ff
 /e131_set_pixel 3,4,ff0000
-/e131_draw_frame {"frame":[[16711680,0,0,0,0,0,0,0],[0,16711680,0,0,0,0,0,0],[0,0,16711680,0,0,0,0,0],[0,0,0,16711680,0,0,0,0],[0,0,0,0,16711680,0,0,0],[0,0,0,0,0,16711680,0,0],[0,0,0,0,0,0,16711680,0],[0,0,0,0,0,0,0,16711680]]}
+/e131_draw_frame {"frame":[["ff0000",0,0,0,0,0,0,0],[0,"ff0000",0,0,0,0,0,0],[0,0,"ff0000",0,0,0,0,0],[0,0,0,"ff0000",0,0,0,0],[0,0,0,0,"ff0000",0,0,0],[0,0,0,0,0,"ff0000",0,0],[0,0,0,0,0,0,"ff0000",0],[0,0,0,0,0,0,0,"ff0000"]]}
 ```
 
