@@ -8,11 +8,16 @@ const Promise = require("bluebird");
 const DEFAULT_HOST = "http://localhost:3131";
 const COMMAND = "e131_draw_frame";
 
+function _normalizeSmartQuotes(val) {
+    if (typeof val !== "string") return val;
+    return val.replace(/[\u201C\u201D]/g, '"').replace(/[\u2018\u2019]/g, "'");
+}
+
 function _parseJsonSafe(val, fallback) {
     if (val === null || typeof val === "undefined") return fallback;
     if (typeof val === "object") return val;
     if (typeof val !== "string") return fallback;
-    try { return JSON.parse(val); } catch (err) { return fallback; }
+    try { return JSON.parse(_normalizeSmartQuotes(val)); } catch (err) { return fallback; }
 }
 
 function _normalizeHost(...vals) {
