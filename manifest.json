@@ -35,18 +35,6 @@
       "resume": "resume_hook",
       "pause": "pause_hook",
       "stop": "stop_hook"
-    },
-    "wf_agent": {
-      "pdName": "wf_agent",
-      "pdAlias": "chuck.e131.wf_agent",
-      "desc": "Workflow agent runtime",
-      "runOnStart": false,
-      "visible": true,
-      "multipleAllowed": true,
-      "init": "init_hook",
-      "resume": "resume_hook",
-      "pause": "pause_hook",
-      "stop": "stop_hook"
     }
   }
 }
