@@ -38,6 +38,11 @@ This value is injected into every webhook invocation automatically by the wf_age
 infrastructure. To point a block at a different gateway, edit `wf_webhook_args.host` in the
 palette block before deploying the pipeline.
 
+If the gateway is started with `--invert-y`, the logical coordinate system changes from
+top-left origin to bottom-left origin. In that mode, `0,0` is the lower left corner and
+`7,7` is the upper right corner. The HTTP routes do not change; only the gateway's
+interpretation of `y` changes.
+
 ### Swarm message format (operation parameters)
 
 The swarm message text carries only the operation-specific parameters. The message text is
@@ -150,6 +155,11 @@ Writes a complete 8×8 frame at once. The frame is an 8×8 array of 24-bit RGB v
 (row-major: `frame[x][y]`). Each cell can be a hex string (`"rrggbb"`, `"#rrggbb"`,
 `"0xrrggbb"`) or an integer (`0` to `16777215`). Use `0` or `"000000"` for black (off).
 
+Coordinate semantics follow the gateway mode:
+
+- Default gateway mode: `0,0` is upper left, `7,7` is lower right.
+- Gateway started with `--invert-y`: `0,0` is lower left, `7,7` is upper right.
+
 | Message parameter | Type | Default | Description |
 |-------------------|------|---------|-------------|
 | `frame` | array | all zeros | 8-element array of 8-element arrays of hex strings or 24-bit integers |
@@ -247,10 +257,12 @@ This gives you two layers of protection:
 
 ### Recommended `ai_agent` system prompt
 
-Use this system prompt for the LLM that will control the matrix:
+If the gateway is started with `--invert-y`, use this system prompt for the LLM that will
+control the matrix:
 
 ```text
-You control an 8x8 RGB LED matrix through five slash-command tools.
+You control an 8x8 RGB LED matrix through five slash-command tools. The origin is 0,0 and is
+in the lower left corner. X increases left to right. Y increases bottom to top. 7,7 is in the upper right corner.
 
 When you want to change the display, output exactly one tool command as the entire reply.
 Do not add explanations, markdown, prose, code fences, or any text before or after the command.
@@ -280,6 +292,9 @@ Examples:
 /e131_set_pixel 3,4,ff0000
 /e131_draw_frame {"frame":[["ff0000",0,0,0,0,0,0,0],[0,"ff0000",0,0,0,0,0,0],[0,0,"ff0000",0,0,0,0,0],[0,0,0,"ff0000",0,0,0,0],[0,0,0,0,"ff0000",0,0,0],[0,0,0,0,0,"ff0000",0,0],[0,0,0,0,0,0,"ff0000",0],[0,0,0,0,0,0,0,"ff0000"]]}
 ```
+
+If the gateway is running in its default mode without `--invert-y`, change only the first
+two sentences so they describe top-left origin with Y increasing top to bottom.
 
 ```
 /e131_draw_frame {"frame":[["4aa3ff","4aa3ff","4aa3ff","4aa3ff","4aa3ff","22aa22","22aa22","22aa22"],["4aa3ff","4aa3ff","4aa3ff","4aa3ff","4aa3ff","22aa22","22aa22","22aa22"],["4aa3ff","ffffff","4aa3ff","4aa3ff","4aa3ff","22aa22","22aa22","22aa22"],["4aa3ff","ffffff","4aa3ff","4aa3ff","4aa3ff","22aa22","22aa22","22aa22"],["4aa3ff","ffd93d","4aa3ff","4aa3ff","4aa3ff","22aa22","22aa22","22aa22"],["4aa3ff","ffd93d","4aa3ff","4aa3ff","4aa3ff","22aa22","22aa22","22aa22"],["ffd93d","ffd93d","ffd93d","4aa3ff","4aa3ff","22aa22","22aa22","22aa22"],["ffd93d","ffd93d","ffd93d","4aa3ff","4aa3ff","22aa22","22aa22","22aa22"]]}
